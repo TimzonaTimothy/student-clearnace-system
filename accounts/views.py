@@ -43,28 +43,28 @@ def deposit(request):
     
     user = request.user
     if request.is_ajax():
-        year = request.POST.get('year', False)
         amount = request.POST.get('amount', False)
         ref =  request.POST.get('ref', False)
         email = request.POST.get('email', False)
+        service = request.POST.get('service',False)
         if request.user.is_authenticated:
-            deposit = Userhistory.objects.create(user=user,amount=amount,ref=ref,email=email)
+            deposit = Userhistory.objects.create(user=user,amount=amount,ref=ref,email=email,service=service)
             deposit.confirm = True
             deposit.transaction = 'Paid'
             deposit.save();
-            if year == 'Year 1 Fee':
+            if service == 'Year 1 Fee':
                 user.year1_fee =amount
                 user.save()
-            elif year == 'Year 2 Fee':
+            elif service == 'Year 2 Fee':
                 user.year2_fee =amount
                 user.save()
-            elif year == 'Year 3 Fee':
+            elif service == 'Year 3 Fee':
                 user.year3_fee =amount
                 user.save()
-            elif year == 'Year 4 Fee':
+            elif service == 'Year 4 Fee':
                 user.year4_fee =amount
                 user.save()
-            elif year == 'Year 5 Fee':
+            elif service == 'Year 5 Fee':
                 user.year5_fee =amount
                 user.save()
             deposited = True
@@ -75,13 +75,25 @@ def deposit(request):
                 return JsonResponse({'deposited':deposited})
 
 
-@login_required(login_url='/sign_in')
-def verify_payment(request, reference):
-    payment = get_object_or_404(Paystack, reference=reference)
-    verified = payment.verify_payment()
-    if verified:
-        messages.success(request, 'Successful Deposit')
-    else:
-        messages.error(request, 'Incomplete Deposit Transaction')
-    return redirect('/')
+# @login_required(login_url='/sign_in')
+# def verify_payment(request, reference):
+#     payment = get_object_or_404(Paystack, reference=reference)
+#     verified = payment.verify_payment()
+#     if verified:
+#         messages.success(request, 'Successful Deposit')
+#     else:
+#         messages.error(request, 'Incomplete Deposit Transaction')
+#     return redirect('/')
     
+
+@login_required(login_url='/sign_in')
+def deposit_complete(request):
+    ref = request.GET.get('ref')
+    try:
+        paid = Userhistory.objects.get(ref=ref,user=request.user) 
+        context={
+            'paid':paid
+        }
+        return render(request, 'deposit_complete.html', context)
+    except(Userhistory.DoesNotExist):
+        return redirect('/')

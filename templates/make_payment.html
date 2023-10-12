@@ -57,8 +57,8 @@
                                     {% comment %} <div class="col-12">
                                         <button type="submit" class="btn btn-primary px-4">Pay</button>
                                     </div> {% endcomment %}
-                                    <span class="col-12 btn-border btn-secondary" style="cursor: pointer;">
-                                      <a  onclick="payWithPayStack()" class="cmn-btn">Pay</a>
+                                    <span onclick="payWithPayStack()" class="col-12 btn-border btn-secondary" style="cursor: pointer;text-align:center;">
+                                      <a  class="cmn-btn">Pay</a>
                                   </span>
                                     
                                 </div>
@@ -124,11 +124,12 @@
                       'ref': ref,
                       'user': user,
                       'email':user,
+                      'service':service,
                   },
                   success: function(response){
                       console.log(response);
                       // location.reload();
-                      window.location.href = '/verify/' + '?reference='+ref;
+                      window.location.href = 'deposited/' + '?ref='+ref;
                     
 
                   },

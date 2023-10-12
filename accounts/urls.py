@@ -11,7 +11,7 @@ urlpatterns = [
     path('make_payment_page',views.make_payment_page, name="make_payment_page"),
     path('pay', views.pay, name="pay"),
     path('deposit',views.deposit,name="deposit"),
-    path('verify/<str:reference>/', views.verify_payment, name='verify_payment'),   
+    path('deposited/', views.deposit_complete, name='deposit_detail'),   
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
