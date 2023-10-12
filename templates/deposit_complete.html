@@ -1,14 +1,17 @@
 
-
-<div class="invoice-details mt25" style="margin:20px 20px;">
-    <div class="well">
-        <ul class="list-unstyled mb0">
-            <li><strong>Email: </strong>{{paid.user}}</li>
-            <li><strong>Service: </strong>{{paid.service}}</li>
-            <li><strong>Amount: </strong>{{paid.amount}}</li>
-            <li><strong>Transaction: </strong>{{paid.ref}}</li>
-            <li><strong>Date: </strong>{{paid.date_created}}</li>
-            <li><strong>Status: </strong> PAID</li>
-        </ul>
+<center>
+    <div class="invoice-details mt25" style="margin:20px 20px;text-align:left;justify-content:center;">
+        <div class="well">
+            <ul class="list-unstyled mb0">
+                <li><strong>Names: </strong>{{paid.user.full_name}}</li>
+                <li><strong>Email: </strong>{{paid.user}}</li>
+                <li><strong>Service: </strong>{{paid.service}}</li>
+                <li><strong>Amount: </strong>{{paid.amount}}</li>
+                <li><strong>Referrence No: </strong>{{paid.ref}}</li>
+                <li><strong>Date: </strong>{{paid.date_created}}</li>
+                <li><strong>Status: </strong> PAID</li>
+            </ul>
+        </div>
     </div>
-</div>
+</center>
+<a href="{% url 'accounts:generate_pdf' ref=paid.ref %}">Download PDF</a>

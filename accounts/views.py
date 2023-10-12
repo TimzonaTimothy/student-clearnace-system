@@ -3,6 +3,10 @@ from .models import *
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.http import HttpResponse
+
 import json
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
@@ -31,12 +35,6 @@ def make_payment_page(request):
         return render(request, 'make_payment.html', {'year':year,'schoolfees':schoolfees}) 
     
     return render(request, 'make_payment_page.html', {'empty_fees':empty_fees})
-
-
-@login_required(login_url='/sign_in')
-def pay(request):
-    return render(request, 'make_payment.html', {})
-
 
 @login_required(login_url='login')
 def deposit(request):
@@ -97,3 +95,30 @@ def deposit_complete(request):
         return render(request, 'deposit_complete.html', context)
     except(Userhistory.DoesNotExist):
         return redirect('/')
+    
+@login_required(login_url='/sign_in')
+def generate_pdf(request, ref):
+    # Fetch the Userhistory instance
+    paid = get_object_or_404(Userhistory, ref=ref, user=request.user)
+
+    # Load the template for the PDF
+    template = get_template('deposit_complete.html')
+    context = {'paid': paid}
+
+    # Render the template with context
+    html = template.render(context)
+
+    # Create a PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="{ref}.pdf"'
+
+    # Create the PDF
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+    if pisaStatus.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+
+    return response
+
+
+def payment_history(request):
+    return render(request, 'payment_history.html',{})
