@@ -1,17 +1,44 @@
-
-<center>
-    <div class="invoice-details mt25" style="margin:20px 20px;text-align:left;justify-content:center;">
-        <div class="well">
-            <ul class="list-unstyled mb0">
-                <li><strong>Names: </strong>{{paid.user.full_name}}</li>
-                <li><strong>Email: </strong>{{paid.user}}</li>
-                <li><strong>Service: </strong>{{paid.service}}</li>
-                <li><strong>Amount: </strong>{{paid.amount}}</li>
-                <li><strong>Referrence No: </strong>{{paid.ref}}</li>
-                <li><strong>Date: </strong>{{paid.date_created}}</li>
-                <li><strong>Status: </strong> PAID</li>
-            </ul>
+{% extends 'base.html' %} {% load static %} {% block breadcrumb %}
+<li class="breadcrumb-item">Home</li>
+<li class="breadcrumb-item">Payment</li>
+<li class="breadcrumb-item active">Payment Histroy</li>
+{% endblock breadcrumb%} {% block content %}
+<div class="container animated fadeIn">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="card-group">
+        <div class="card p-4">
+          <div class="card-body">
+            <center>
+              <div
+                class="invoice-details mt25"
+                style="
+                  margin: 20px 20px;
+                  text-align: left;
+                  justify-content: center;
+                "
+              >
+                <div class="well">
+                  <ul class="list-unstyled mb0">
+                    <li><strong>Names: </strong>{{paid.user.full_name}}</li>
+                    <li><strong>Email: </strong>{{paid.user}}</li>
+                    <li><strong>Service: </strong>{{paid.service}}</li>
+                    <li><strong>Amount: </strong>{{paid.amount}}</li>
+                    <li><strong>Referrence No: </strong>{{paid.ref}}</li>
+                    <li><strong>Date: </strong>{{paid.date_created}}</li>
+                    <li><strong>Status: </strong>{{paid.transaction}}</li>
+                  </ul>
+                </div>
+              </div>
+            </center>
+            <a href="{% url 'accounts:generate_pdf' ref=paid.ref %}"
+              >Download PDF</a>
+            
+          </div>
         </div>
+      </div>
     </div>
-</center>
-<a href="{% url 'accounts:generate_pdf' ref=paid.ref %}">Download PDF</a>
+  </div>
+</div>
+<br />
+{% endblock %}

@@ -19,8 +19,21 @@
                     <div class="card p-4">
                         <div class="card-body">
                             
-                            
-                            
+                            {% if payments %}
+                                {% for payment in payments %}
+                                <ul class="list-unstyled mb0">
+                                    <li><strong>Names: </strong>{{payment.user.full_name}}</li>
+                                    <li><strong>Email: </strong>{{payment.user}}</li>
+                                    <li><strong>Service: </strong>{{payment.service}}</li>
+                                    <li><strong>Amount: </strong>{{payment.amount}}</li>
+                                    <li><strong>Referrence No: </strong>{{payment.ref}}</li>
+                                    <li><strong>Date: </strong>{{payment.date_created}}</li>
+                                    <li><strong>Status: </strong>{{payment.transaction}}</li>
+                                </ul>
+                                <br>
+                                {% endfor %}
+                                <a href="{% url 'accounts:generate_payment_history_pdf' %}">Download PDF</a>
+                            {% endif %}
                         </div>
                     </div>
                    
@@ -28,5 +41,5 @@
             </div>
         </div>
     </div>
-
+<br>
 {% endblock %}

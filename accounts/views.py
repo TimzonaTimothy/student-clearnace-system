@@ -88,7 +88,7 @@ def deposit(request):
 def deposit_complete(request):
     ref = request.GET.get('ref')
     try:
-        paid = Userhistory.objects.get(ref=ref,user=request.user) 
+        paid = Userhistory.objects.get(ref=ref,user=request.user, confirm=True) 
         context={
             'paid':paid
         }
@@ -102,7 +102,7 @@ def generate_pdf(request, ref):
     paid = get_object_or_404(Userhistory, ref=ref, user=request.user)
 
     # Load the template for the PDF
-    template = get_template('deposit_complete.html')
+    template = get_template('deposit_complete_pdf.html')
     context = {'paid': paid}
 
     # Render the template with context
@@ -121,4 +121,27 @@ def generate_pdf(request, ref):
 
 
 def payment_history(request):
-    return render(request, 'payment_history.html',{})
+    payments = Userhistory.objects.all().filter(user=request.user, confirm=True)
+    return render(request, 'payment_history.html',{'payments':payments})
+
+@login_required(login_url='/sign_in')
+def generate_payment_history_pdf(request):
+    payments = Userhistory.objects.filter(user=request.user, confirm=True)
+    user = request.user
+    # Load the template for the PDF
+    template = get_template('payment_history_pdf.html')
+    context = {'payments': payments,'user':user}
+
+    # Render the template with context
+    html = template.render(context)
+
+    # Create a PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="payment_history.pdf"'
+
+    # Create the PDF
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+    if pisaStatus.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+
+    return response
