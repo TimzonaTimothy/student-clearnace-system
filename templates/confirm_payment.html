@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block breadcrumb %}
+        <li class="breadcrumb-item">Home</li>
+        <li class="breadcrumb-item">Payment</li>
+        <li class="breadcrumb-item active">Make Payment</li>
+{% endblock breadcrumb%}
+
+
+
+
+
+{% block content %}
+<div class="container animated fadeIn">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card-group">
+                    <div class="card p-4">
+                        <div class="card-body">
+                            
+                            
+                            <form method="POST">
+                                {% csrf_token %}
+                                <h1>Clearance Payment</h1>
+                                <p class="text-muted">Confirm Payment</p>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><i class="fa fa-industry"></i></span>
+                                        </div>
+                                        <input type="text"
+                                       class="form-control"
+                                       name="amount"
+                                       value="{% if schoolfees %}{{schoolfees.first}}{% endif %}"
+                                       placeholder="Amount" required readonly>
+                                        
+                                            
+                                    </div>
+                                </div> 
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><i class="fa fa-industry"></i></span>
+                                        </div>
+                                        <input type="text"
+                                       class="form-control"
+                                       name="year"
+                                       value="{{year}}"
+                                       placeholder="year" required>
+                                            
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary px-4">Pay</button>
+                                    </div>
+                                    
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script> 
+
+    <script>
+        function payWithPaystack() {
+            let handler = PaystackPop.setup({
+                key: '{{PUBLIC_KEY}}', 
+                email: '{{request.user.email}}',
+                amount: '{{payment.amount_value}}',
+                currency: 'NGN',
+                ref: '{{payment.reference}}',
+                onClose: function () {
+                    alert('Window closed.');
+                },
+                callback: function (response) {
+                    window.location.href = "{{ verify_payment_url }}";
+                }
+            });
+            handler.openIframe();
+        }
+    </script>
+{% endblock %}

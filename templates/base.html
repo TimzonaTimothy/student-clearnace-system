@@ -1,0 +1,228 @@
+{% load static %}
+<!--
+ * CoreUI - Open Source Bootstrap Admin Template
+ * @version v1.0.10
+ * @link http://coreui.io
+ * Copyright (c) 2018 creativeLabs Łukasz Holeczek
+ * @license MIT
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147225311-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-147225311-2');
+    </script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
+  <meta name="author" content="Łukasz Holeczek">
+  <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,AngularJS,Angular,Angular2,Angular 2,Angular4,Angular 4,jQuery,CSS,HTML,RWD,Dashboard,React,React.js,Vue,Vue.js">
+  <meta name="google-site-verification" content="83fcqoPn-YTkXathQiicW-x3U2RWZh4PaPUzk91wtjY" />
+  <title>Student Clearance System</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
+  <link href="{% static 'core/css/simple-line-icons.min.css' %}" rel="stylesheet">
+
+  <!-- Main styles for this application -->
+  <link href="{% static 'core/css/estilo.css' %}" rel="stylesheet">
+  <link href="{% static 'core/css/style.css' %}" rel="stylesheet">
+
+</head>
+{% block body %}
+<body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
+
+  <header class="app-header navbar">
+    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <img src="{% static 'core/img/logos/gui-horizontal.png' %}" alt="" class="brand-gui ml-2 d-none d-sm-block p-2">
+    <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <ul class="nav navbar-nav d-md-down-none">
+      <li class="nav-item px-3">
+        <a class="nav-link" href="{% url 'main:home' %}">Home</a>
+      </li>
+      <li class="nav-item px-3">
+        {% comment %} <a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a> {% endcomment %}
+      </li>
+      <!--<li class="nav-item px-3">-->
+        <!--<a class="nav-link" href="#">Settings</a>-->
+      <!--</li>-->
+    </ul>
+    <ul class="nav navbar-nav ml-auto">
+      
+      <li class="nav-item d-md-down-none">
+        <a class="nav-link" href="#"><i class="fa fa-list"></i></a>
+      </li>
+      <li class="nav-item d-md-down-none">
+        <a class="nav-link" href="#"><i class="fa fa-map-marker"></i></a>
+      </li>
+      {% if user.is_authenticated %}
+      <li class="text-muted">Hello, {{ user.first_name }}</li>
+      {% else %}
+      <li class="text-muted">
+        <a href="{% url 'main:sign_in' %}">sign in</a>
+      </li>
+      {% endif %}
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+          {% if user.is_authenticated %}
+          <img src="{% static 'core/img/avatar/blank_profile.png' %}" class="img-avatar" alt="{{ user }}">
+          {% else %}
+          <img src="{% static 'core/img/avatar/blank_profile.png' %}" class="img-avatar" alt="{{ user }}">
+          {% endif %}
+        </a>
+        <div class="dropdown-menu dropdown-menu-right">
+          {% if user.is_authenticated %}
+          <div class="dropdown-header text-center">
+            <strong>Settings</strong>
+          </div>
+          <a class="dropdown-item" href=""><i class="fa fa-user"></i> Profile</a>
+          <!--<a class="dropdown-item" href="#"><i class="fa fa-wrench"></i> Settings</a>-->
+          <!--<a class="dropdown-item" href="#"><i class="fa fa-usd"></i> Payments<span class="badge badge-secondary">42</span></a>-->
+            <!--<a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a>-->
+          <div class="divider"></div>
+          <!--<a class="dropdown-item" href="#"><i class="fa fa-shield"></i> Lock Account</a>-->
+
+          <a class="dropdown-item" href="{% url 'main:logout' %}"><i class="fa fa-lock"></i> Logout</a>
+          {% else %}
+          <a class="dropdown-item" href="{% url 'main:sign_in' %}"><i class="fa fa-user"></i> sign_in</a>
+          {% endif %}
+        </div>
+      </li>
+    </ul>
+    
+
+  </header>
+
+  <div class="app-body">
+    <div class="sidebar">
+      <nav class="sidebar-nav">
+        <ul class="nav">
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'main:home' %}"><i class="fa fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:dashboard' %}"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+          </li>
+
+          {% comment %} <li class="nav-item nav-dropdown">
+            <a class="nav-link nav-dropdown-toggle" href="#"><i class="fa fa-tachometer-alt"></i>Views</a>
+            <ul class="nav-dropdown-items">
+              <li class="nav-item">
+                <a class="nav-link" href=""><i class="fa fa-paper-plane ml-2"></i>View</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href=""><i class="fa fa-user ml-2"></i></a>
+              </li>
+            </ul>
+          </li> {% endcomment %}
+
+          <li class="divider"></li>
+          <li class="nav-title">
+            Payments
+          </li>
+          <li class="nav-item nav-dropdown">
+            <a class="nav-link nav-dropdown-toggle" href="#"><i class="fa fa-user"></i>Payments</a>
+            <ul class="nav-dropdown-items">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:make_payment_page' %}"><i class="fa fa-user-plus ml-2"></i>Make Payment</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href=""><i class="fa fa-user-plus ml-2"></i>Verify Payment</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href=""><i class="fa fa-users ml-2"></i>Payment Histroy</a>
+              </li>
+            </ul>
+          </li>
+          <li class="divider"></li>
+          
+          <li class="divider"></li>
+          <li class="nav-title">
+            Extras
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'main:logout' %}" target="_top"><i class="fa fa-sign-out"></i> Logout</a>
+          </li>
+        </ul>
+        {% else %}
+        {% endif %}
+      </nav>
+      <button class="sidebar-minimizer brand-minimizer" type="button"></button>
+    </div>
+
+    <!-- Main content -->
+    <main class="main">
+      <!-- Breadcrumb -->
+      <ol class="breadcrumb">
+        {% block breadcrumb %}
+        <li class="breadcrumb-item active">Home</li>
+        <li class="breadcrumb-item">Dashboard</li>
+        {% endblock breadcrumb%}
+
+        <!-- Breadcrumb Menu-->
+        <li class="breadcrumb-menu d-md-down-none">
+          <div class="btn-group" role="group" aria-label="Button group">
+            <a class="btn" href="#"><i class="fa fa-comments"></i></a>
+            <a class="btn" href="./"><i class="fa fa-tachometer-alt"></i> &nbsp;Dashboard</a>
+            <a class="btn" href="#"><i class="fa fa-cog"></i> &nbsp;Settings</a>
+          </div>
+        </li>
+      </ol>
+{% block content %}
+{% endblock %}
+    </main>
+
+    <aside class="aside-menu">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#timeline" role="tab"><i class="fa fa-list"></i></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#messages" role="tab"><i class="fa fa-comments"></i></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#settings" role="tab"><i class="fa fa-cog"></i></a>
+        </li>
+      </ul>
+        
+      </div>
+    </aside>
+
+  </div>
+
+  <footer class="app-footer">
+    <span><a href="http://coreui.io">Copyright</a> © </span>
+    <!--<span class="ml-auto">Powered by <a href="http://coreui.io">CoreUI</a></span>-->
+  </footer>
+
+  <!-- Bootstrap and necessary plugins -->
+    <script src="{% static 'core/vendors/js/jquery.min.js'%}"></script>
+    <script src="{% static 'core/vendors/js/popper.min.js'%}"></script>
+    <script src="{% static 'core/vendors/js/bootstrap.min.js'%}"></script>
+    <script src="{% static 'core/vendors/js/pace.min.js'%}"></script>
+    <script src="{% static 'core/vendors/js/Chart.min.js'%}"></script>
+
+  <!-- CoreUI main scripts -->
+
+    <script src="{% static 'core/js/app.js'%}"></script>
+
+  <!-- Plugins and scripts required by this views -->
+
+  <!-- Custom scripts required by this view -->
+    <script src="{% static 'core/js/main.js'%}"></script>
+
+</body>
+{% endblock body %}
+</html>

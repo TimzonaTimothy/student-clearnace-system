@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block breadcrumb %}
+        <li class="breadcrumb-item">Home</li>
+        <li class="breadcrumb-item">Payment</li>
+        <li class="breadcrumb-item active">Make Payment</li>
+{% endblock breadcrumb%}
+
+
+
+
+
+{% block content %}
+<script src="https://js.paystack.co/v1/inline.js"></script> 
+<div class="container animated fadeIn">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card-group">
+                    <div class="card p-4">
+                        <div class="card-body">
+                            
+                            
+                            <form method="POST">
+                                {% csrf_token %}
+                                <h1>Clearance Payment</h1>
+                                <p class="text-muted">Click to pay</p>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><i class="fa fa-industry"></i></span>
+                                        </div>
+                                        <input type="text"
+                                       class="form-control"
+                                       name="amount"
+                                       value="{% if schoolfees %}{{schoolfees.first}}{% endif %}"
+                                       placeholder="Amount" required readonly id="amount">
+                                        
+                                            
+                                    </div>
+                                </div> 
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><i class="fa fa-industry"></i></span>
+                                        </div>
+                                        <input type="text"
+                                       class="form-control"
+                                       name="year"
+                                       value="{{year}}"
+                                       placeholder="year" required id="service" readonly>
+                                            
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    {% comment %} <div class="col-12">
+                                        <button type="submit" class="btn btn-primary px-4">Pay</button>
+                                    </div> {% endcomment %}
+                                    <span class="col-12 btn-border btn-secondary" style="cursor: pointer;">
+                                      <a  onclick="payWithPayStack()" class="cmn-btn">Pay</a>
+                                  </span>
+                                    
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+    
+
+    
+<script>
+  const getCookie = (name) => {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      const csrftoken = getCookie('csrftoken');
+
+
+  function payWithPayStack(){
+      
+      
+      let user = "{{request.user.email}}";
+      let currency = "NGN";
+      let plan = "";
+      let ref = "{{request.user.id}}"+Math.floor((Math.random() * 1000000000) + 1 );
+      let amount = ((document.getElementById('amount').value)* 100);
+      let service = document.getElementById('service').value;
+
+      let obj = {
+          
+          key: "pk_test_14162cb89ec6e813cf664044d2cf5a44f5b40255",
+          email: user,
+          amount: amount,
+          ref: ref,
+          callback: function(response){
+              
+              
+              $.ajax({
+                  type: 'POST',
+                  url: "deposit",
+                  data: {
+                      'csrfmiddlewaretoken': csrftoken,
+                      'amount': amount,
+                      'ref': ref,
+                      'user': user,
+                      'email':user,
+                  },
+                  success: function(response){
+                      console.log(response);
+                      // location.reload();
+                      window.location.href = '/verify/' + '?reference='+ref;
+                    
+
+                  },
+                  error: function(error){
+                      console.log(error);
+                      
+                  }
+              })
+          }
+      }
+      if (Boolean(currency)){
+          obj.currency = currency.toUpperCase()
+      }
+      if (Boolean(plan)){
+          obj.plan - plan;
+      }
+      var handler = PaystackPop.setup(obj);
+      handler.openIframe();
+  }
+  
+</script>
+
+{% endblock %}

@@ -1,0 +1,146 @@
+{% comment %} {% extends 'core/base.html' %} {% endcomment %}
+
+<!--
+ * CoreUI - Open Source Bootstrap Admin Template
+ * @version v1.0.10
+ * @link http://coreui.io
+ * Copyright (c) 2018 creativeLabs Łukasz Holeczek
+ * @license MIT
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147225311-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-147225311-2');
+    </script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
+  <meta name="author" content="Łukasz Holeczek">
+  <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,AngularJS,Angular,Angular2,Angular 2,Angular4,Angular 4,jQuery,CSS,HTML,RWD,Dashboard,React,React.js,Vue,Vue.js">
+  <meta name="google-site-verification" content="83fcqoPn-YTkXathQiicW-x3U2RWZh4PaPUzk91wtjY" />
+  <title>Project Manager</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
+  <link href="{% static 'core/css/simple-line-icons.min.css' %}" rel="stylesheet">
+
+  <!-- Main styles for this application -->
+  <link href="{% static 'core/css/estilo.css' %}" rel="stylesheet">
+  <link href="{% static 'core/css/style.css' %}" rel="stylesheet">
+
+</head>
+
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-9 col-lg-8">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="deposit-tab">
+                    <div class="row">
+                        <div class="col-xxl-12 col-xl-12">
+                            <div class="right-area">
+                                <center>
+                                    <h5 class="mb-4">confirm Deposit</h5>
+                                </center>
+                                <div class="address-bar text-black">
+                                    Full name: {{request.user.first_name}} {{request.user.last_name}}
+                                    <br>
+                                    Email: {{request.user.email}}
+                                    <br>
+                                    Amount: {{payment.amount}}
+                                    <br>
+                                    {% comment %} Project: {{payment.project}} {% endcomment %}
+                                    
+                                </div>
+                                <br>
+                                <center>
+                                    <div class="qr-copy d-flex justify-content-center align-items-center mt-3">
+                                        <span class="btn-border w-20 mt-1">
+                                            <button class="btn btn-primary" onclick="payWithPaystack()">Next</button>
+                                        </span>
+                                    </div>
+                                </center>
+
+                                <div class="bottom-area mb-3 mt-5">
+                                    <div class="single-item">
+                                        <h6 style="color: yellow;">Important :</h6>
+                                        <ul>
+                                            <li>Please confirm your details</li>
+                                            <li>All deposit will be credited imediately after confirmation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script> 
+{% comment %} <script>
+    function payWithPaystack() {
+        var ref = Math.floor((Math.random() * 1000000000) + 1 );
+        let handler = PaystackPop.setup({
+            key: '{{PUBLIC_KEY}}', 
+            email: '{{request.user.email}}',
+            amount: '{{amount}}',
+            currency: 'NGN',
+            ref: ref,
+            onClose: function () {
+                alert('Window closed.');
+            },
+            callback: function (response) {
+                var redirectURL = "/payments/" +'?reference='+ref;;
+                window.location.href = redirectURL; 
+            }
+        });
+        handler.openIframe();
+    }
+</script> {% endcomment %}
+
+<script>
+    function payWithPaystack() {
+        let handler = PaystackPop.setup({
+            key: '{{PUBLIC_KEY}}', 
+            email: '{{request.user.email}}',
+            amount: '{{payment.amount_value}}',
+            currency: 'NGN',
+            ref: '{{payment.reference}}',
+            onClose: function () {
+                alert('Window closed.');
+            },
+            callback: function (response) {
+                window.location.href = "{{ verify_payment_url }}";
+            }
+        });
+        handler.openIframe();
+    }
+</script>
+
+
+
+<script src="{% static 'core/vendors/js/jquery.min.js'%}"></script>
+  <script src="{% static 'core/vendors/js/popper.min.js'%}"></script>
+  <script src="{% static 'core/vendors/js/bootstrap.min.js'%}"></script>
+  <script src="{% static 'core/vendors/js/pace.min.js'%}"></script>
+  <script src="{% static 'core/vendors/js/Chart.min.js'%}"></script>
+
+<!-- CoreUI main scripts -->
+
+  <script src="{% static 'core/js/app.js'%}"></script>
+
+<!-- Plugins and scripts required by this views -->
+
+<!-- Custom scripts required by this view -->
+  <script src="{% static 'core/js/main.js'%}"></script>
