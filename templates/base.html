@@ -48,9 +48,10 @@
     </button>
 
     <ul class="nav navbar-nav d-md-down-none">
-      <li class="nav-item px-3">
+      {% comment %} <li class="nav-item px-3">
         <a class="nav-link" href="{% url 'main:home' %}">Home</a>
-      </li>
+      </li> {% endcomment %}
+
       <li class="nav-item px-3">
         {% comment %} <a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a> {% endcomment %}
       </li>
@@ -109,9 +110,9 @@
       <nav class="sidebar-nav">
         <ul class="nav">
           {% if user.is_authenticated %}
-          <li class="nav-item">
+          {% comment %} <li class="nav-item">
             <a class="nav-link" href="{% url 'main:home' %}"><i class="fa fa-home"></i> Home</a>
-          </li>
+          </li> {% endcomment %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'accounts:dashboard' %}"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
           </li>
