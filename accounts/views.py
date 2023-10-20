@@ -6,12 +6,10 @@ from django.http import JsonResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
-from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
-
 import json
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
+
 @login_required(login_url='/sign_in')
 def dashboard(request):
     return render(request, 'dashboard.html', {})
@@ -111,18 +109,6 @@ def deposit(request):
             if service in service_mapping:
                 setattr(user, service_mapping[service], amount)
                 user.save()
-            mail_subject = 'Payment Notification'
-            message = render_to_string('mail.html', {
-                'user':user,
-                'ref':ref,
-                'amount':amount,
-                'service':service,
-                })
-                    
-            to_email = user.email
-            send_email = EmailMessage(mail_subject, message, to=[to_email])
-            send_email.content_subtype = "html"
-            send_email.send()
 
             deposited = True
             if deposited:
