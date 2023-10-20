@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 
 import json
 from django.shortcuts import get_object_or_404, redirect
@@ -24,17 +26,35 @@ def make_payment_page(request):
     if not request.user.year3_fee:
         empty_fees.append(('Year 3 Fee'))
     if not request.user.year4_fee:
-        empty_fees.append(('Year 4 Fee'))
+         empty_fees.append(('Year 4 Fee'))
     if not request.user.year5_fee:
         empty_fees.append(('Year 5 Fee'))
-
     if request.method == 'POST':
-        year = request.POST.get('year')
+        year = request.POST.get('year',False)
         # request.session['year'] = year
-        schoolfees = SchoolFees.objects.filter(department=request.user.department)
-        return render(request, 'make_payment.html', {'year':year,'schoolfees':schoolfees}) 
+        selected_fee = request.POST.get('selected_fee')
+        if selected_fee == 'School Fees':
+            fee = SchoolFees.objects.filter(department=request.user.department).first()
+            return render(request, 'make_payment.html',{'selected_fee':year,'fee':fee}) 
+        elif selected_fee == 'Faculty Fee':
+            fee = FacultyFees.objects.filter(department=request.user.department).first()
+            status = request.user.department_fee
+            return render(request, 'make_payment.html', {'selected_fee':selected_fee,'fee':fee,'status':status}) 
+        elif selected_fee == 'Department Fee':
+            fee = DepartmentFees.objects.filter(department=request.user.department).first()
+            status = request.user.department_fee
+            return render(request, 'make_payment.html', {'selected_fee':selected_fee,'fee':fee,'status':status}) 
+        elif selected_fee == 'library Fee':
+            fee = libraryFees.objects.filter(department=request.user.department).first()
+            status = request.user.department_fee
+            return render(request, 'make_payment.html', {'selected_fee':selected_fee,'fee':fee,'status':status}) 
+        elif selected_fee == 'Medical Fee':
+            fee = MedicalFees.objects.filter(department=request.user.department).first()
+            status = request.user.department_fee
+            return render(request, 'make_payment.html', {'selected_fee':selected_fee,'fee':fee,'status':status}) 
+        
     
-    return render(request, 'make_payment_page.html', {'empty_fees':empty_fees})
+    return render(request, 'make_payment_page.html', {'empty_fees': empty_fees})
 
 @login_required(login_url='login')
 def deposit(request):
@@ -50,26 +70,63 @@ def deposit(request):
             deposit.confirm = True
             deposit.transaction = 'Paid'
             deposit.save();
-            if service == 'Year 1 Fee':
-                user.year1_fee =amount
+            # if service == 'Year 1 Fee':
+            #     user.year1_fee =amount
+            #     user.save()
+            # elif service == 'Year 2 Fee':
+            #     user.year2_fee =amount
+            #     user.save()
+            # elif service == 'Year 3 Fee':
+            #     user.year3_fee =amount
+            #     user.save()
+            # elif service == 'Year 4 Fee':
+            #     user.year4_fee =amount
+            #     user.save()
+            # elif service == 'Year 5 Fee':
+            #     user.year5_fee =amount
+            #     user.save()
+            # elif service == 'Faculty Fee':
+            #     user.faculty_fee =amount
+            #     user.save()
+            # elif service == 'Department Fee':
+            #     user.department_fee =amount
+            #     user.save()
+            # elif service == 'library Fee':
+            #     user.library_fee =amount
+            #     user.save()
+            # elif service == 'Medical Fee':
+            #     user.medical_fee =amount
+            #     user.save()
+            service_mapping = {
+                'Year 1 Fee': 'year1_fee',
+                'Year 2 Fee': 'year2_fee',
+                'Year 3 Fee': 'year3_fee',
+                'Year 4 Fee': 'year4_fee',
+                'Year 5 Fee': 'year5_fee',
+                'Faculty Fee': 'faculty_fee',
+                'Department Fee': 'department_fee',
+                'library Fee': 'library_fee',
+                'Medical Fee': 'medical_fee',
+            }
+            if service in service_mapping:
+                setattr(user, service_mapping[service], amount)
                 user.save()
-            elif service == 'Year 2 Fee':
-                user.year2_fee =amount
-                user.save()
-            elif service == 'Year 3 Fee':
-                user.year3_fee =amount
-                user.save()
-            elif service == 'Year 4 Fee':
-                user.year4_fee =amount
-                user.save()
-            elif service == 'Year 5 Fee':
-                user.year5_fee =amount
-                user.save()
+            mail_subject = 'Payment Notification'
+            message = render_to_string('mail.html', {
+                'user':user,
+                'ref':ref,
+                'amount':amount,
+                'service':service,
+                })
+                    
+            to_email = user.email
+            send_email = EmailMessage(mail_subject, message, to=[to_email])
+            send_email.content_subtype = "html"
+            send_email.send()
+
             deposited = True
-            
             if deposited:
                 messages.success(request, 'Deposit, Successful')
-
                 return JsonResponse({'deposited':deposited})
 
 
@@ -120,6 +177,7 @@ def generate_pdf(request, ref):
     return response
 
 
+@login_required(login_url='login')
 def payment_history(request):
     payments = Userhistory.objects.all().filter(user=request.user, confirm=True)
     return render(request, 'payment_history.html',{'payments':payments})

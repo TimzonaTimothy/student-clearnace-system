@@ -73,6 +73,10 @@ class Account(AbstractBaseUser):
     year3_fee = models.CharField(max_length=100,  null=True, blank=True)
     year4_fee = models.CharField(max_length=100,  null=True, blank=True)
     year5_fee = models.CharField(max_length=100,  null=True, blank=True)
+    department_fee = models.CharField(max_length=100,  null=True, blank=True)
+    faculty_fee = models.CharField(max_length=100,  null=True, blank=True)
+    library_fee = models.CharField(max_length=100,  null=True, blank=True)
+    medical_fee = models.CharField(max_length=100,  null=True, blank=True)
     last_activity = models.DateTimeField(auto_now=True)
 
     date_joined   = models.DateTimeField(auto_now_add=True) 
@@ -102,20 +106,42 @@ class Account(AbstractBaseUser):
         return True
     
 
-    
-class SchoolFees(models.Model):
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+class BaseFee(models.Model):
+    department = models.OneToOneField(Department, on_delete=models.CASCADE, null=True, unique=True)
     amount = models.CharField(max_length=250, null=True,blank=True)
     date = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        abstract = True
+        ordering = ('-date',)
+    
     def __str__(self):
         return str(self.amount)
     
+class SchoolFees(BaseFee):
     class Meta:
-        ordering = ('-date',)
         verbose_name = 'School Fee'
         verbose_name_plural = 'School Fees'
 
+class FacultyFees(BaseFee):
+    class Meta:
+        verbose_name = 'Faculty Fee'
+        verbose_name_plural = 'Faculty Fees'
+
+class DepartmentFees(BaseFee):
+    class Meta:
+        verbose_name = 'Department Fee'
+        verbose_name_plural = 'Department Fees'
+
+class libraryFees(BaseFee):
+    class Meta:
+        verbose_name = 'library Fee'
+        verbose_name_plural = 'library Fees'
+
+class MedicalFees(BaseFee):
+    class Meta:
+        verbose_name = 'Medical Fee'
+        verbose_name_plural = 'Medical Fees'
 
 class Paystack(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)

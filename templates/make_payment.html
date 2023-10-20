@@ -33,7 +33,7 @@
                                         <input type="text"
                                        class="form-control"
                                        name="amount"
-                                       value="{% if schoolfees %}{{schoolfees.first}}{% endif %}"
+                                       value="{% if fee %}{{fee}}{% endif %}"
                                        placeholder="Amount" required readonly id="amount">
                                         
                                             
@@ -47,7 +47,7 @@
                                         <input type="text"
                                        class="form-control"
                                        name="year"
-                                       value="{{year}}"
+                                       value="{{selected_fee}}"
                                        placeholder="year" required id="service" readonly>
                                             
                                     </div>
@@ -57,9 +57,15 @@
                                     {% comment %} <div class="col-12">
                                         <button type="submit" class="btn btn-primary px-4">Pay</button>
                                     </div> {% endcomment %}
+                                    {% if not status %}
                                     <span onclick="payWithPayStack()" class="col-12 btn-border btn-secondary" style="cursor: pointer;text-align:center;">
                                       <a  class="cmn-btn">Pay</a>
                                   </span>
+                                  {% else %}
+                                  <span class="col-12 btn-border btn-secondary" style="cursor: pointer;text-align:center;">
+                                    <a  class="cmn-btn">Already Paid</a>
+                                </span>
+                                  {% endif %}
                                     
                                 </div>
                             </form>
@@ -103,7 +109,7 @@
       let currency = "NGN";
       let plan = "";
       let ref = "{{request.user.id}}"+Math.floor((Math.random() * 1000000000) + 1 );
-      let amount = ((document.getElementById('amount').value)* 100);
+      let amount = ((document.getElementById('amount').value));
       let service = document.getElementById('service').value;
 
       let obj = {
