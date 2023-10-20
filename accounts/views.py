@@ -7,6 +7,8 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 import json
+from io import BytesIO
+from django.views.generic import ListView
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
 
@@ -68,33 +70,7 @@ def deposit(request):
             deposit.confirm = True
             deposit.transaction = 'Paid'
             deposit.save();
-            # if service == 'Year 1 Fee':
-            #     user.year1_fee =amount
-            #     user.save()
-            # elif service == 'Year 2 Fee':
-            #     user.year2_fee =amount
-            #     user.save()
-            # elif service == 'Year 3 Fee':
-            #     user.year3_fee =amount
-            #     user.save()
-            # elif service == 'Year 4 Fee':
-            #     user.year4_fee =amount
-            #     user.save()
-            # elif service == 'Year 5 Fee':
-            #     user.year5_fee =amount
-            #     user.save()
-            # elif service == 'Faculty Fee':
-            #     user.faculty_fee =amount
-            #     user.save()
-            # elif service == 'Department Fee':
-            #     user.department_fee =amount
-            #     user.save()
-            # elif service == 'library Fee':
-            #     user.library_fee =amount
-            #     user.save()
-            # elif service == 'Medical Fee':
-            #     user.medical_fee =amount
-            #     user.save()
+            
             service_mapping = {
                 'Year 1 Fee': 'year1_fee',
                 'Year 2 Fee': 'year2_fee',
@@ -115,17 +91,6 @@ def deposit(request):
                 messages.success(request, 'Deposit, Successful')
                 return JsonResponse({'deposited':deposited})
 
-
-# @login_required(login_url='/sign_in')
-# def verify_payment(request, reference):
-#     payment = get_object_or_404(Paystack, reference=reference)
-#     verified = payment.verify_payment()
-#     if verified:
-#         messages.success(request, 'Successful Deposit')
-#     else:
-#         messages.error(request, 'Incomplete Deposit Transaction')
-#     return redirect('/')
-    
 
 @login_required(login_url='/sign_in')
 def deposit_complete(request):
@@ -182,6 +147,113 @@ def generate_payment_history_pdf(request):
     # Create a PDF response
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="payment_history.pdf"'
+
+    # Create the PDF
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+    if pisaStatus.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+
+    return response
+
+def user_fees_list(request):
+    user=request.user
+    school_fees = SchoolFees.objects.filter(department=request.user.department).first()
+    department_fee = DepartmentFees.objects.filter(department=request.user.department).first()
+    faculty_fee = FacultyFees.objects.filter(department=request.user.department).first()
+    library_fee = libraryFees.objects.filter(department=request.user.department).first()
+    medical_fee = MedicalFees.objects.filter(department=request.user.department).first()
+    grand_total = sum([int(school_fees.amount)*5, int(department_fee.amount), int(faculty_fee.amount), int(library_fee.amount),int(medical_fee.amount)])
+    paid = 0
+    if user.year1_fee:
+        paid += int(user.year1_fee)
+    if user.year2_fee:
+        paid += int(user.year2_fee)
+    if user.year3_fee:
+        paid += int(user.year3_fee)
+    if user.year4_fee:
+        paid += int(user.year4_fee)
+    if user.year5_fee:
+        paid += int(user.year5_fee)
+    if user.department_fee:
+        paid += int(user.department_fee)
+    if user.faculty_fee:
+        paid += int(user.faculty_fee)
+    if user.library_fee:
+        paid += int(user.library_fee)
+    if user.medical_fee:
+        paid += int(user.medical_fee)
+    outstanding = (grand_total) - (paid)
+    context = {
+        'school_fees':school_fees,
+        'department_fee':department_fee,
+        'faculty_fee':faculty_fee,
+        'library_fee':library_fee,
+        'medical_fee':medical_fee,
+        'grand_total':grand_total,
+        'paid':paid,
+        'outstanding':outstanding
+    }
+    return render(request, 'user_fees_list.html',context)
+
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    html  = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+def generate_pdf(request):
+    
+    user=request.user
+    school_fees = SchoolFees.objects.filter(department=request.user.department).first()
+    department_fee = DepartmentFees.objects.filter(department=request.user.department).first()
+    faculty_fee = FacultyFees.objects.filter(department=request.user.department).first()
+    library_fee = libraryFees.objects.filter(department=request.user.department).first()
+    medical_fee = MedicalFees.objects.filter(department=request.user.department).first()
+    grand_total = sum([int(school_fees.amount)*5, int(department_fee.amount), int(faculty_fee.amount), int(library_fee.amount),int(medical_fee.amount)])
+    paid = 0
+    if user.year1_fee:
+        paid += int(user.year1_fee)
+    if user.year2_fee:
+        paid += int(user.year2_fee)
+    if user.year3_fee:
+        paid += int(user.year3_fee)
+    if user.year4_fee:
+        paid += int(user.year4_fee)
+    if user.year5_fee:
+        paid += int(user.year5_fee)
+    if user.department_fee:
+        paid += int(user.department_fee)
+    if user.faculty_fee:
+        paid += int(user.faculty_fee)
+    if user.library_fee:
+        paid += int(user.library_fee)
+    if user.medical_fee:
+        paid += int(user.medical_fee)
+    outstanding = (grand_total) - (paid)
+    
+    template = get_template('user_fees_list_pdf.html')
+    context = {
+        'school_fees':school_fees,
+        'department_fee':department_fee,
+        'faculty_fee':faculty_fee,
+        'library_fee':library_fee,
+        'medical_fee':medical_fee,
+        'grand_total':grand_total,
+        'paid':paid,
+        'outstanding':outstanding,
+        'user':user
+    }
+
+    # Render the template with context
+    html = template.render(context)
+
+    # Create a PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="clearance.pdf"'
 
     # Create the PDF
     pisaStatus = pisa.CreatePDF(html, dest=response)

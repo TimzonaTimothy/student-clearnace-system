@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block breadcrumb %}
+        <li class="breadcrumb-item">Home</li>
+        <li class="breadcrumb-item">Clearance</li>
+        {% comment %} <li class="breadcrumb-item active">Payment Histroy</li> {% endcomment %}
+{% endblock breadcrumb%}
+
+
+
+
+
+{% block content %}
+<div class="container animated fadeIn">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card-group">
+                    <div class="card p-4">
+                        <div class="card-body">
+
+                            <h1>User Clearance</h1>
+                            <li><strong>Names: </strong>{{request.user.full_name}}</li>
+                            <li><strong>Email: </strong>{{request.user}}</li>
+                            <li><strong>Matric Number: </strong>{{request.user.matric_number}}</li>
+                            <li><strong>Department: </strong>{{request.user.department}}</li>
+                            <li><strong>Faculty: </strong>{{request.user.faculty}}</li>
+                            <li><strong>Session: </strong>{{request.user.session}}</li>
+                            
+
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Service</th>
+                                    <th scope="col">Amount</th>
+                                    
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th scope="row">Year 1 Fee</th>
+                                    <td>{{school_fees.amount}}</td>
+                                    <td>{{request.user.year1_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Year 2 Fee</th>
+                                    <td>{{school_fees.amount}}</td>
+                                    <td>{{request.user.year2_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Year 3 Fee</th>
+                                    <td>{{school_fees.amount}}</td>
+                                    <td>{{request.user.year3_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Year 4 Fee</th>
+                                    <td>{{school_fees.amount}}</td>
+                                    <td>{{request.user.year4_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Year 5 Fee</th>
+                                    <td>{{school_fees.amount}}</td>
+                                    <td>{{request.user.year5_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Department Fee</th>
+                                    <td>{{department_fee.amount}}</td>
+                                    <td>{{request.user.department_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Faculty Fee</th>
+                                    <td>{{faculty_fee.amount}}</td>
+                                    <td>{{request.user.faculty_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">library Fee</th>
+                                    <td>{{library_fee.amount}}</td>
+                                    <td>{{request.user.library_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Medical Fee</th>
+                                    <td>{{medical_fee.amount}}</td>
+                                    <td>{{request.user.medical_fee}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Total</th>
+                                    <td>{{grand_total}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Paid</th>
+                                    <td>{{paid}}</td>
+                                    
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Outstanding</th>
+                                    <td>{{outstanding}}</td>
+                                    
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
+                        <a href="{% url 'accounts:generate_pdf' %}">Download PDF</a>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+<br>
+{% endblock %}

@@ -14,6 +14,8 @@ urlpatterns = [
     path('generate_pdf/<str:ref>/', views.generate_pdf, name='generate_pdf'),
     path('payment_history', views.payment_history, name="payment_history"),
     path('generate_payment_history_pdf/', views.generate_payment_history_pdf, name='generate_payment_history_pdf'),
+    path('user_fees/', views.user_fees_list, name='user_fees_list'),
+    path('generate_pdf/', views.generate_pdf, name='generate_pdf'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
